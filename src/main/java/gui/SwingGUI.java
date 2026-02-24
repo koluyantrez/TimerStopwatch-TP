@@ -1,6 +1,5 @@
 package gui;
 
-import states.Context;
 import states.EventListener;
 
 import javax.swing.JFrame;
