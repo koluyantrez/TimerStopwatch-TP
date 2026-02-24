@@ -1,12 +1,14 @@
 package states.timer;
 
 import states.ClockState;
+import java.util.logging.Logger;
 
 public class RingingTimer extends ActiveTimer {
  	
 	// use Singleton design pattern
 	private RingingTimer() {}; // make constructor invisible to clients
     private static RingingTimer instance = null;
+    private static final Logger logger = Logger.getLogger(ClockState.class.getName());
 
     private static boolean isRinging = false;
 
@@ -35,14 +37,14 @@ public class RingingTimer extends ActiveTimer {
     protected void entry() {
         super.entry();
         isRinging=true;
-        System.out.println("is it ringing ? (true): "+isRinging());
+        logger.info(this.getClass().getName()+" is ringing");
     }
 
     @Override
     protected void exit() {
         super.entry();
         isRinging=false;
-        System.out.println("is it ringing ? (false): "+isRinging());
+        logger.info(this.getClass().getName()+" is not ringing anymore");
     }
     
 }
