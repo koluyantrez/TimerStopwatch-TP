@@ -1,5 +1,6 @@
 package states;
 
+import gui.SwingGUI;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -75,5 +76,12 @@ public class AddTest {
         c.tick();
         c.currentState = RingingTimer.Instance();
         c.tick();
+    }
+
+    @Test
+    @DisplayName("GUI init coverage")
+    void coverGUI() {
+        Context context = new Context();
+        new SwingGUI(context);
     }
 }
