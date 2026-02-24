@@ -22,10 +22,9 @@ public abstract class ClockState {
     // transition can only be used, but not overridden, by substates
     protected final ClockState transition(ClockState nextState) {
     	exit(); // execute the exit action of the current state;
-    	ClockState target = nextState;
-    	target.entry(); // execute the entry action of the target state;
+        nextState.entry(); // execute the entry action of the target state;
     	//target.doIt(); // executing the recurring action in the target state once;
-        return target; // and return the target state
+        return nextState; // and return the target state
         // 
     }
     
