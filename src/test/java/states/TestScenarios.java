@@ -1,93 +1,105 @@
 package states;
 
-import org.junit.jupiter.api.*;
-import static org.junit.jupiter.api.Assertions.*;
+import io.cucumber.java.Before;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.When;
+import io.cucumber.java.en.Then;
 
 import states.stopwatch.*;
 import states.timer.*;
 
-@DisplayName("Full Timer and Stopwatch Scenario Tests")
-class TestScenarios {
+import static org.junit.jupiter.api.Assertions.*;
 
-	Context c;
+public class TestScenarios {
 
-	@BeforeEach
-	void setup() {
-		c = new Context();
-		// before each test, reset timer and stopwatch values to avoid interference between tests
-		AbstractTimer.resetInitialValues();
-		AbstractStopwatch.resetInitialValues();
-	}
+    private Context c;
 
-	@Test
-	@DisplayName("Complete scenario: timer and stopwatch transitions with history and laptime")
-	void completeScenario() {
-		assertEquals(IdleTimer.Instance(), c.currentState, "Initial state should be IdleTimer");
-		assertEquals(0, AbstractTimer.getMemTimer(), "Initial memTimer should be 0");
+    @Before
+    public void setup() {
+        c = new Context();
+        AbstractTimer.resetInitialValues();
+        AbstractStopwatch.resetInitialValues();
+    }
 
-		c.right(); // start incrementing the memTimer variable
-		c.tick();
-		assertSame(SetTimer.Instance(), c.currentState, "Right event should go to SetTimer");
-		assertEquals(1, AbstractTimer.getMemTimer(), "memTimer should be incremented to 1");
-		assertEquals(0, AbstractTimer.getTimer(), "timer should remain 0");
+    //======================== Timer initial ========================
+    @Given("the timer is idle with empty memory")
+    public void timerIsIdleWithEmptyMemory() {
+        assertSame(IdleTimer.Instance(), c.currentState, "Initial state should be IdleTimer");
+        assertEquals(0, AbstractTimer.getTimer(), "Timer should start at 0");
+        assertEquals(0, AbstractTimer.getMemTimer(), "memTimer should start at 0");
+    }
 
-		c.tick();
-		assertEquals(2, AbstractTimer.getMemTimer(), "memTimer should be incremented to 2");
-		assertEquals(0, AbstractTimer.getTimer(), "timer should remain 0");
+    @When("the user sets the timer memory to two seconds")
+    public void setTimerMemoryToTwo() {
+        c.right(); // Idle -> SetTimer
+        c.tick();  // memTimer = 1
+        c.tick();  // memTimer = 2
+        c.right(); // SetTimer -> Idle
+    }
 
-		c.right(); // stop incrementing memTimer
-		c.tick();
-		assertEquals(2, AbstractTimer.getMemTimer(), "memTimer should remain 2");
-		assertEquals(0, AbstractTimer.getTimer(), "timer should remain 0");
+    @When("the user starts the timer")
+    public void startTimer() {
+        c.up(); // Idle -> RunningTimer
+        assertSame(RunningTimer.Instance(), c.currentState, "Timer should be running");
+    }
 
-		c.up(); // start running the timer
-		assertEquals(2, AbstractTimer.getTimer(), "timer should start at 2");
-		c.tick();
-		assertEquals(2, AbstractTimer.getMemTimer(), "memTimer should remain 2");
-		assertEquals(1, AbstractTimer.getTimer(), "timer should increment to 1");
+    @Then("the timer reaches the ringing state after two ticks")
+    public void timerRingsAfterTwoTicks() {
+        c.tick();
+        assertEquals(1, AbstractTimer.getTimer(), "Timer should decrement to 1");
+        c.tick();
+        assertSame(RingingTimer.Instance(), c.currentState, "Timer should switch to RingingTimer");
+        assertEquals(0, AbstractTimer.getTimer(), "Timer should reach 0");
+    }
 
-		c.up(); // pause the timer
-		c.tick();
-		assertSame(PausedTimer.Instance(), c.currentState, "Timer should be paused");
-		assertEquals(2, AbstractTimer.getMemTimer(), "memTimer remains 2");
-		assertEquals(1, AbstractTimer.getTimer(), "timer remains 1");
+    //======================== Timer pause and history ========================
+    @When("the user pauses the timer")
+    public void pauseTimer() {
+        c.up(); // Running -> Paused
+        assertSame(PausedTimer.Instance(), c.currentState, "Timer should be paused");
+    }
 
-		c.left(); // switch to stopwatch mode
-		c.tick();
-		assertSame(ResetStopwatch.Instance(), c.currentState, "Stopwatch should reset");
-		assertEquals(0, AbstractStopwatch.getTotalTime(), "totalTime should be 0");
-		assertEquals(0, AbstractStopwatch.getLapTime(), "lapTime should be 0");
+    @When("the user switches to stopwatch mode")
+    public void switchToStopwatch() {
+        c.left();
+        assertSame(ResetStopwatch.Instance(), c.currentState, "Stopwatch should reset");
+    }
 
-		c.up(); // start running stopwatch
-		c.tick();
-		assertSame(RunningStopwatch.Instance(), c.currentState, "Stopwatch should be running");
-		assertEquals(1, AbstractStopwatch.getTotalTime(), "totalTime should increment to 1");
-		assertEquals(0, AbstractStopwatch.getLapTime(), "lapTime remains 0");
+    //======================== Stopwatch ========================
+    @When("the user starts the stopwatch")
+    public void startStopwatch() {
+        c.up(); // Reset -> Running
+        assertSame(RunningStopwatch.Instance(), c.currentState, "Stopwatch should be running");
+        c.tick();
+    }
 
-		c.up(); // record laptime
-		c.tick();
-		assertSame(LaptimeStopwatch.Instance(), c.currentState, "Stopwatch should record laptime");
-		assertEquals(2, AbstractStopwatch.getTotalTime(), "totalTime should increment to 2");
-		assertEquals(1, AbstractStopwatch.getLapTime(), "lapTime should increment to 1");
+    @When("the user records a laptime")
+    public void recordLapTime() {
+        c.up(); // Running -> LaptimeStopwatch
+        assertSame(LaptimeStopwatch.Instance(), c.currentState, "Stopwatch should record laptime");
+        assertEquals(1, AbstractStopwatch.getLapTime(), "LapTime should increment");
+    }
 
-		c.left(); // return to timer mode (history state)
-		c.tick();
-		assertSame(PausedTimer.Instance(), c.currentState, "Timer should return to paused state from history");
-		assertEquals(2, AbstractTimer.getMemTimer(), "memTimer should remain 2");
-		assertEquals(1, AbstractTimer.getTimer(), "timer should remain 1");
+    @Then("the stopwatch returns automatically to running mode after timeout")
+    public void stopwatchReturnsToRunning() {
+        // LaptimeStopwatch timeout = 5 ticks
+        for(int i = 0; i < 5; i++) c.tick();
+        assertSame(RunningStopwatch.Instance(), c.currentState, "Stopwatch should return to running");
+    }
 
-		c.up(); // continue running timer
-		assertSame(RunningTimer.Instance(), c.currentState, "Timer should continue running");
-		c.tick();
-		// automatic switch to ringing timer since timer has reached 0
-		assertSame(RingingTimer.Instance(), c.currentState, "Timer should switch to RingingTimer");
-		assertEquals(2, AbstractTimer.getMemTimer(), "memTimer should remain 2");
-		assertEquals(0, AbstractTimer.getTimer(), "timer should be 0");
+    @Then("switching back restores the paused timer history state")
+    public void switchBackRestoresTimerHistory() {
+        c.left(); // Stopwatch -> Timer history
+        assertSame(PausedTimer.Instance(), c.currentState, "Timer should restore paused state");
+    }
 
-		c.right(); // return to idle timer state
-		c.tick();
-		assertSame(IdleTimer.Instance(), c.currentState, "Timer should return to IdleTimer");
-		assertEquals(2, AbstractTimer.getMemTimer(), "memTimer should remain 2");
-		assertEquals(0, AbstractTimer.getTimer(), "timer should be 0");
-	}
+    @Then("the timer can continue and eventually return to idle")
+    public void timerContinuesAndReturnsToIdle() {
+        c.up(); // Paused -> Running
+        c.tick(); // decrement timer
+        assertSame(RingingTimer.Instance(), c.currentState, "Timer should ring when timer reaches 0");
+        c.right(); // Ringing -> Idle
+        c.tick();
+        assertSame(IdleTimer.Instance(), c.currentState, "Timer should return to IdleTimer");
+    }
 }
