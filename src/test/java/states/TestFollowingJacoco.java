@@ -8,7 +8,7 @@ import states.stopwatch.*;
 import states.timer.*;
 
 @DisplayName("Some test following jacoco.")
-public class AddTest {
+public class TestFollowingJacoco {
     Context c;
 
     @BeforeEach
