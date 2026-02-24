@@ -1,5 +1,7 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>umons</groupId>
   <artifactId>TimerStopwatch</artifactId>
@@ -11,7 +13,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>21</java.version>
-    <junit.version>5.12.1</junit.version>
+    <junit.version>6.0.2</junit.version>
     <maven.compiler.version>3.10.1</maven.compiler.version>
     <maven.surefire.version>3.5.5</maven.surefire.version>
     <maven.compiler.source>21</maven.compiler.source>
@@ -19,6 +21,7 @@
   </properties>
 
   <dependencies>
+    <!-- JUnit 6 pour tests -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
@@ -27,14 +30,34 @@
     </dependency>
   </dependencies>
 
+  <!-- Section reporting pour générer un rapport HTML -->
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>3.2.2</version>
+      </plugin>
+    </plugins>
+  </reporting>
+
   <build>
     <plugins>
+      <!-- Maven Surefire Plugin configuré pour JUnit 6 -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven.surefire.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-engine</artifactId>
+            <version>${junit.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
 
+      <!-- Plugin pour exécuter ChronometerMain -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
@@ -47,7 +70,7 @@
             <phase>install</phase>
             <goals>
               <goal>java</goal>
-             </goals>
+            </goals>
             <configuration>
               <mainClass>ChronometerMain</mainClass>
             </configuration>
