@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import states.stopwatch.*;
 import states.timer.*;
 
+@DisplayName("Some test following jacoco.")
 public class AddTest {
     Context c;
 
