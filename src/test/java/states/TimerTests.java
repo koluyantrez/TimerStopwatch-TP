@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import states.timer.*;
 import states.stopwatch.AbstractStopwatch;
 
+@DisplayName("Timer State Machine Unit Tests")
 class TimerTests {
 
 	private static Context context;
@@ -13,46 +14,44 @@ class TimerTests {
 
 	@BeforeEach
 	void setup() {
-        context = new Context(); // create the state machine context
-        AbstractTimer.resetInitialValues();
+		context = new Context(); // create the state machine context
+		AbstractTimer.resetInitialValues();
 	}
-		
+
 	@Test
+	@DisplayName("Initial state: Context should start in IdleTimer with zero values")
 	void testInitialState() {
-		/* When initialising the context (see setup() method above)
-		 * its currentState will be initialised with the initial state
-		 * of timer, i.e. the IdleTimer state.
-		 */
 		current = context.currentState;
-		
-	    assertEquals(Mode.timer, current.getMode());
-	    assertSame(IdleTimer.Instance(), current);
-	    assertEquals(0, AbstractTimer.getTimer(),"For the value of timer we ");
-	    assertEquals(0, AbstractTimer.getMemTimer(),"For the value of memTimer we ");
+
+		assertEquals(Mode.timer, current.getMode(), "Mode should be timer");
+		assertSame(IdleTimer.Instance(), current, "Initial state should be IdleTimer");
+		assertEquals(0, AbstractTimer.getTimer(), "Timer should start at 0");
+		assertEquals(0, AbstractTimer.getMemTimer(), "MemTimer should start at 0");
 	}
-	
+
 	@Test
+	@DisplayName("AbstractTimer instance should match IdleTimer singleton")
 	void testInitialAbstractTimer() {
-		// The initial state of composite state AbstractTimer should be IdleTimer
-		assertSame(AbstractTimer.Instance(), IdleTimer.Instance());
+		assertSame(AbstractTimer.Instance(), IdleTimer.Instance(),
+				"AbstractTimer instance should match IdleTimer singleton");
 	}
-	
+
 	@Test
+	@DisplayName("ActiveTimer instance should start in RunningTimer")
 	void testInitialActiveTimer() {
-		// The initial state of composite state ActiveTimer should be RunningTimer
-		assertSame(ActiveTimer.Instance(), RunningTimer.Instance());
+		assertSame(ActiveTimer.Instance(), RunningTimer.Instance(),
+				"ActiveTimer initial state should be RunningTimer");
 	}
-	
+
 	@Test
+	@DisplayName("History state: left events should navigate correctly between Timer and Stopwatch")
 	void testHistoryState() {
 		current = AbstractTimer.Instance();
 		// after processing the left() event, we should arrive in the initial state of AbstractStopwatch
 		newState = current.left();
-		assertEquals(AbstractStopwatch.Instance(), newState);
-		/* after another occurrence of the left() event, we should return to the original state
-		 * because we used history states		
-		 */
-		assertEquals(current, newState.left());
+		assertEquals(AbstractStopwatch.Instance(), newState, "Left event should switch to AbstractStopwatch");
+		// after another left() event, we should return to the original state due to history
+		assertEquals(current, newState.left(), "Second left() should return to previous state using history");
 	}
 
 }
