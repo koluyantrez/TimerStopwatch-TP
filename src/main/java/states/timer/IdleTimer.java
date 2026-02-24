@@ -5,7 +5,7 @@ import states.ClockState;
 public class IdleTimer extends AbstractTimer {
 
 	// use Singleton design pattern
-	private IdleTimer() {}; // make constructor invisible to clients
+	private IdleTimer() {} // make constructor invisible to clients
 	private static IdleTimer instance = null;
 	public static IdleTimer Instance() {
 	    if(instance == null) instance = new IdleTimer();       

@@ -12,7 +12,7 @@ public abstract class ClockState {
     public String getUpText() { return "(unused)"; }
 
     public ClockState right() {return this; } // button 3 pressed (by default do nothing)
-    public String getRightText() { return "(unused)"; }; // text to display on button 3
+    public String getRightText() { return "(unused)"; } // text to display on button 3
         
     public abstract String getDisplayString(); // string to be displayed in GUI
     public abstract Mode getMode();
@@ -34,14 +34,14 @@ public abstract class ClockState {
     	// the entry action of the state, which is empty (no action) by default
     	//System.out.println("entering " + this.getClass().getName());
         logger.info("entering " + this.getClass().getName());
-    };
+    }
 
     	
     protected void exit() {
     	// the exit action of the state, which is empty (no action) by default
     	//System.out.println("exiting " + this.getClass().getName());
         logger.info("exiting " + this.getClass().getName());
-    };
+    }
     	
     protected ClockState doIt() {
     	// specific behaviour to be implemented in each state.

@@ -5,7 +5,7 @@ import states.ClockState;
 public class RingingTimer extends ActiveTimer {
  	
 	// use Singleton design pattern
-	private RingingTimer() {}; // make constructor invisible to clients
+	private RingingTimer() {} // make constructor invisible to clients
     private static RingingTimer instance = null;
 
     private static boolean isRinging = false;

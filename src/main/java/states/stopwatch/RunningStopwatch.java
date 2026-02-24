@@ -5,7 +5,7 @@ import states.ClockState;
 public class RunningStopwatch extends ActiveStopwatch {
  
 	// use Singleton design pattern
-	private RunningStopwatch() {}; // make constructor invisible to clients
+	private RunningStopwatch() {} // make constructor invisible to clients
     private static RunningStopwatch instance = null;
     public static RunningStopwatch Instance() {
         if(instance == null) instance = new RunningStopwatch();                

@@ -7,7 +7,7 @@ public class LaptimeStopwatch extends ActiveStopwatch {
 	private int timeout;
 	
 	// use Singleton design pattern
-    private LaptimeStopwatch() {};
+    private LaptimeStopwatch() {}
     private static LaptimeStopwatch instance = null;
     public static LaptimeStopwatch Instance() {
         if(instance == null) instance = new LaptimeStopwatch();

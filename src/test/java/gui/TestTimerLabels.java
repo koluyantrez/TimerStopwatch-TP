@@ -36,7 +36,7 @@ class TestTimerLabels extends TestGUIAbstract {
 		assertEquals("IdleTimer",g.myText3.getText());
 		assertEquals("timer",g.myText2.getText());
 		assertEquals("memTimer = 0",g.myText1.getText());
-	};
+	}
 
 	@Test
 	@DisplayName("Test labels for button's timer number 2")

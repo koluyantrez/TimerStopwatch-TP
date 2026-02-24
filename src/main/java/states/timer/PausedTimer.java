@@ -5,7 +5,7 @@ import states.ClockState;
 public class PausedTimer extends ActiveTimer {
      
 	// use Singleton design pattern
-	private PausedTimer() {}; // make constructor invisible to clients
+	private PausedTimer() {} // make constructor invisible to clients
     private static PausedTimer instance = null;
     public static PausedTimer Instance() {
         if(instance == null) instance = new PausedTimer();        
